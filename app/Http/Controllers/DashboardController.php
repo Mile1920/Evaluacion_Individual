@@ -1,4 +1,5 @@
 <?php
+
 // ARCHIVO: app/Http/Controllers/DashboardController.php
 
 namespace App\Http\Controllers;
@@ -20,10 +21,10 @@ class DashboardController extends Controller
         $totalProductos = Producto::count();
 
         $ultimasVentas = Venta::with(['producto', 'user'])
-                               ->whereDate('created_at', today())
-                               ->orderByDesc('created_at')
-                               ->take(5)
-                               ->get();
+            ->whereDate('created_at', today())
+            ->orderByDesc('created_at')
+            ->take(5)
+            ->get();
 
         return view('dashboard', compact(
             'productosStockBajo',

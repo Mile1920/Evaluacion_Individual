@@ -1,4 +1,5 @@
 <?php
+
 // ARCHIVO: database/migrations/2024_01_02_000000_create_productos_table.php
 
 use Illuminate\Database\Migrations\Migration;

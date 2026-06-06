@@ -15,9 +15,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('productos', ProductoController::class)->except(['show']);
 
-    Route::get('/ventas',       [VentaController::class, 'index'])->name('ventas.index');
+    Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
     Route::get('/ventas/crear', [VentaController::class, 'create'])->name('ventas.create');
-    Route::post('/ventas',      [VentaController::class, 'store'])->name('ventas.store');
+    Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
 });
 
 require __DIR__.'/auth.php';

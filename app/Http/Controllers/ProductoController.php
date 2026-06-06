@@ -10,6 +10,7 @@ class ProductoController extends Controller
     public function index()
     {
         $productos = Producto::orderBy('nombre')->paginate(15);
+
         return view('productos.index', compact('productos'));
     }
 
@@ -18,6 +19,7 @@ class ProductoController extends Controller
         if (auth()->user()->rol !== 'ADMIN') {
             abort(403, 'Solo el ADMIN puede realizar esta acción.');
         }
+
         return view('productos.create');
     }
 
@@ -28,17 +30,17 @@ class ProductoController extends Controller
         }
 
         $request->validate([
-            'codigo'      => 'required|unique:productos,codigo|max:50',
-            'nombre'      => 'required|max:150',
-            'precio'      => 'required|numeric|min:0',
-            'stock'       => 'required|integer|min:0',
+            'codigo' => 'required|unique:productos,codigo|max:50',
+            'nombre' => 'required|max:150',
+            'precio' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'laboratorio' => 'required|max:100',
         ]);
 
         Producto::create($request->only(['codigo', 'nombre', 'precio', 'stock', 'laboratorio']));
 
         return redirect()->route('productos.index')
-                         ->with('success', 'Producto creado correctamente.');
+            ->with('success', 'Producto creado correctamente.');
     }
 
     public function edit(Producto $producto)
@@ -46,6 +48,7 @@ class ProductoController extends Controller
         if (auth()->user()->rol !== 'ADMIN') {
             abort(403);
         }
+
         return view('productos.edit', compact('producto'));
     }
 
@@ -56,17 +59,17 @@ class ProductoController extends Controller
         }
 
         $request->validate([
-            'codigo'      => 'required|unique:productos,codigo,' . $producto->id . '|max:50',
-            'nombre'      => 'required|max:150',
-            'precio'      => 'required|numeric|min:0',
-            'stock'       => 'required|integer|min:0',
+            'codigo' => 'required|unique:productos,codigo,'.$producto->id.'|max:50',
+            'nombre' => 'required|max:150',
+            'precio' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'laboratorio' => 'required|max:100',
         ]);
 
         $producto->update($request->only(['codigo', 'nombre', 'precio', 'stock', 'laboratorio']));
 
         return redirect()->route('productos.index')
-                         ->with('success', 'Producto actualizado correctamente.');
+            ->with('success', 'Producto actualizado correctamente.');
     }
 
     public function destroy(Producto $producto)
@@ -77,12 +80,12 @@ class ProductoController extends Controller
 
         if ($producto->ventas()->count() > 0) {
             return redirect()->route('productos.index')
-                             ->with('error', 'No se puede eliminar: tiene ventas registradas.');
+                ->with('error', 'No se puede eliminar: tiene ventas registradas.');
         }
 
         $producto->delete();
 
         return redirect()->route('productos.index')
-                         ->with('success', 'Producto eliminado.');
+            ->with('success', 'Producto eliminado.');
     }
 }
