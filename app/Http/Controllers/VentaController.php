@@ -31,32 +31,33 @@ class VentaController extends Controller
 
     public function store(Request $request)
     {
-        
+        $request->validate([
+            'producto_id' => 'required|exists:productos,id',
+            'cantidad'    => 'required|integer|min:1',
+        ]);
+
         $producto = Producto::findOrFail($request->producto_id);
 
-        if (!$request->producto_id) {
-            return back()->withErrors(['producto_id' => 'Seleccione un producto.']);
-        }
-        if (!$request->cantidad) {
-            return back()->withErrors(['cantidad' => 'Ingrese una cantidad.']);
-        }
-        if ($request->cantidad <= 0) {
-            return back()->withErrors(['cantidad' => 'La cantidad debe ser mayor a 0.']);
-        }
         if ($request->cantidad > $producto->stock) {
-            return back()->withErrors(['cantidad' => 'Stock insuficiente.']);
+            return back()
+                ->withInput()
+                ->withErrors(['cantidad' => "Stock insuficiente. Disponible: {$producto->stock} unidades."]);
         }
 
-        $total = $producto->precio * $request->cantidad;
-        Venta::create([
-            'producto_id' => $request->producto_id,
-            'user_id'     => auth()->id(),
-            'cantidad'    => $request->cantidad,
-            'total'       => $total,
-        ]);
-        $producto->stock = $producto->stock - $request->cantidad;
-        $producto->save();
+        DB::transaction(function () use ($request, $producto) {
+            $total = $producto->precio * $request->cantidad;
 
-        return redirect()->route('ventas.index')->with('success', 'Venta registrada.');
+            Venta::create([
+                'producto_id' => $producto->id,
+                'user_id'     => auth()->id(),
+                'cantidad'    => $request->cantidad,
+                'total'       => $total,
+            ]);
+
+            $producto->decrement('stock', $request->cantidad);
+        });
+
+        return redirect()->route('ventas.index')
+                         ->with('success', "Venta registrada. Stock de \"{$producto->nombre}\" actualizado.");
     }
 }
