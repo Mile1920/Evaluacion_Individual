@@ -4,7 +4,7 @@
 @section('content')
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
-    <h1 style="font-size:1.4rem; font-weight:800; color:#111;">🛒 Ventas del Día — {{ now()->format('d/m/Y') }}</h1>
+    <h1 style="font-size:1.4rem; font-weight:800; color:#111;">Ventas del Día — {{ now()->format('d/m/Y') }}</h1>
     <a href="{{ route('ventas.create') }}" class="btn btn-primary">+ Registrar Venta</a>
 </div>
 

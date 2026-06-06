@@ -72,7 +72,7 @@
 
     {{-- ─── ÚLTIMAS VENTAS DEL DÍA ─── --}}
     <div class="card">
-        <div class="card-title">🛒 Últimas Ventas del Día</div>
+        <div class="card-title">Últimas Ventas del Día</div>
         @if($ultimasVentas->isEmpty())
             <p style="color:#6b7280;">No hay ventas registradas hoy todavía.</p>
             <a href="{{ route('ventas.create') }}" class="btn btn-primary" style="margin-top:.5rem;">Registrar primera venta</a>

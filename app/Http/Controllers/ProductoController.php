@@ -7,59 +7,82 @@ use Illuminate\Http\Request;
 
 class ProductoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $productos = Producto::orderBy('nombre')->paginate(15);
+        return view('productos.index', compact('productos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        if (auth()->user()->rol !== 'ADMIN') {
+            abort(403, 'Solo el ADMIN puede realizar esta acción.');
+        }
+        return view('productos.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        if (auth()->user()->rol !== 'ADMIN') {
+            abort(403);
+        }
+
+        $request->validate([
+            'codigo'      => 'required|unique:productos,codigo|max:50',
+            'nombre'      => 'required|max:150',
+            'precio'      => 'required|numeric|min:0',
+            'stock'       => 'required|integer|min:0',
+            'laboratorio' => 'required|max:100',
+        ]);
+
+        Producto::create($request->only(['codigo', 'nombre', 'precio', 'stock', 'laboratorio']));
+
+        return redirect()->route('productos.index')
+                         ->with('success', 'Producto creado correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Producto $producto)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Producto $producto)
     {
-        //
+        if (auth()->user()->rol !== 'ADMIN') {
+            abort(403);
+        }
+        return view('productos.edit', compact('producto'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Producto $producto)
     {
-        //
+        if (auth()->user()->rol !== 'ADMIN') {
+            abort(403);
+        }
+
+        $request->validate([
+            'codigo'      => 'required|unique:productos,codigo,' . $producto->id . '|max:50',
+            'nombre'      => 'required|max:150',
+            'precio'      => 'required|numeric|min:0',
+            'stock'       => 'required|integer|min:0',
+            'laboratorio' => 'required|max:100',
+        ]);
+
+        $producto->update($request->only(['codigo', 'nombre', 'precio', 'stock', 'laboratorio']));
+
+        return redirect()->route('productos.index')
+                         ->with('success', 'Producto actualizado correctamente.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Producto $producto)
     {
-        //
+        if (auth()->user()->rol !== 'ADMIN') {
+            abort(403);
+        }
+
+        if ($producto->ventas()->count() > 0) {
+            return redirect()->route('productos.index')
+                             ->with('error', 'No se puede eliminar: tiene ventas registradas.');
+        }
+
+        $producto->delete();
+
+        return redirect()->route('productos.index')
+                         ->with('success', 'Producto eliminado.');
     }
 }
