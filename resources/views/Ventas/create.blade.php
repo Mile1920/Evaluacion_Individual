@@ -51,7 +51,7 @@
 
             <div style="display:flex; gap:.75rem; justify-content:flex-end;">
                 <a href="{{ route('ventas.index') }}" class="btn btn-secondary">Cancelar</a>
-                <button type="submit" class="btn btn-primary">✅ Confirmar Venta</button>
+                <button type="submit" class="btn btn-primary">Confirmar Venta</button>
             </div>
         </form>
     </div>
